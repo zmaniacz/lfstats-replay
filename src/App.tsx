@@ -1,26 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import ReplayContainer from "./ReplayContainer";
+import { LoadError } from "./LFLoad";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const gameId = Number(
+    new URLSearchParams(window.location.search).get("gameId")
   );
+
+  if (typeof gameId === "number") return <ReplayContainer gameId={gameId} />;
+  else return <LoadError />;
 }
 
 export default App;
