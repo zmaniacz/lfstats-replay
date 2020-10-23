@@ -44,6 +44,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
   function reset() {
     setMilliseconds(0);
     setIsActive(false);
+    setActions(null);
   }
 
   return (
