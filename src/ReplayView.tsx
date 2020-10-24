@@ -62,6 +62,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
     setMilliseconds(0);
     setIsActive(false);
     setActions(null);
+    setDeltas(null);
   }
 
   return (
@@ -92,7 +93,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
           {actions
             ?.map((action) => {
               return (
-                <li key={action.action_time}>
+                <li key={action.id}>
                   {action.player_name} {action.action_text} {action.target_name}
                 </li>
               );
