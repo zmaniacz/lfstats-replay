@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { EuiButton, EuiText } from "@elastic/eui";
 
 function millisToMinutesAndSeconds(millis: number) {
   var minutes = Math.floor((millis / 1000 / 60) % 60);
@@ -20,15 +21,17 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
   const [actions, setActions] = useState<Array<any> | null>(null);
   const [isActive, setIsActive] = useState(false);
 
+  const gameLength = gameData.game.game_length * 1000;
+
   function toggle() {
     setIsActive(!isActive);
   }
 
   useEffect(() => {
     let interval: any = null;
-    if (isActive) {
+    if (isActive && milliseconds <= gameLength + 1000) {
       interval = setInterval(() => {
-        setMilliseconds((milliseconds) => milliseconds + 5);
+        setMilliseconds((milliseconds) => milliseconds + 1000);
       }, 1);
       setActions(
         gameData.game_logs.filter(
@@ -39,7 +42,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isActive, milliseconds, gameData.game_logs]);
+  }, [isActive, milliseconds, gameData, gameLength]);
 
   function reset() {
     setMilliseconds(0);
@@ -49,29 +52,25 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
 
   return (
     <>
-      <div>{gameData.game.game_datetime}</div>
-      <div className="time">{millisToMinutesAndSeconds(milliseconds)}</div>
+      <EuiText color="danger">{gameData.game.game_datetime}</EuiText>
+      <div className="time">
+        {millisToMinutesAndSeconds(milliseconds)} /{" "}
+        {millisToMinutesAndSeconds(gameLength)}
+      </div>
       <div className="row">
-        <button
-          className={`button button-primary button-primary-${
-            isActive ? "active" : "inactive"
-          }`}
-          onClick={toggle}
-        >
-          {isActive ? "Pause" : "Start"}
-        </button>
-        <button className="button" onClick={reset}>
-          Reset
-        </button>
+        <EuiButton onClick={toggle}>{isActive ? "Pause" : "Start"}</EuiButton>
+        <EuiButton onClick={reset}>Reset</EuiButton>
       </div>
       <div>
-        {actions?.map((action) => {
-          return (
-            <li>
-              {action.player_name} {action.action_text} {action.target_name}
-            </li>
-          );
-        })}
+        {actions
+          ?.map((action) => {
+            return (
+              <li key={action.action_time}>
+                {action.player_name} {action.action_text} {action.target_name}
+              </li>
+            );
+          })
+          .reverse()}
       </div>
     </>
   );

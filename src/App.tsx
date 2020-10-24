@@ -2,6 +2,8 @@ import React from "react";
 import ReplayContainer from "./ReplayContainer";
 import { LoadError } from "./LFLoad";
 
+import "@elastic/eui/dist/eui_theme_amsterdam_light.css";
+
 function App() {
   const gameId = Number(
     new URLSearchParams(window.location.search).get("gameId")
