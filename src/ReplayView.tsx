@@ -75,17 +75,6 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       <EuiButton onClick={reset}>Reset</EuiButton>
       <EuiFlexGroup alignItems="flexStart">
         <EuiFlexItem>
-          {actions
-            ?.map((action) => {
-              return (
-                <li key={action.action_time}>
-                  {action.player_name} {action.action_text} {action.target_name}
-                </li>
-              );
-            })
-            .reverse()}
-        </EuiFlexItem>
-        <EuiFlexItem>
           <VictoryChart>
             {deltas?.map((team: any) => (
               <VictoryLine
@@ -98,6 +87,17 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
               />
             ))}
           </VictoryChart>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          {actions
+            ?.map((action) => {
+              return (
+                <li key={action.action_time}>
+                  {action.player_name} {action.action_text} {action.target_name}
+                </li>
+              );
+            })
+            .reverse()}
         </EuiFlexItem>
       </EuiFlexGroup>
     </>
