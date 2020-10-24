@@ -1,6 +1,6 @@
 import React from "react";
-import ReplayContainer from "./ReplayContainer";
 import { LoadError } from "./LFLoad";
+import ReplayContainer from "./ReplayContainer";
 
 import "@elastic/eui/dist/eui_theme_amsterdam_light.css";
 

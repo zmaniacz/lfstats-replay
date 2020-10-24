@@ -10,6 +10,17 @@ const GET_ACTIONS = gql`
       game_datetime
       duration
       game_length
+      game_teams(where: { color_enum: { _neq: 0 } }) {
+        color_desc
+        color_enum
+        color_normal
+        id
+        neutral_team
+        team_deltas {
+          score_time
+          sum
+        }
+      }
     }
     game_logs(where: { game_id: { _eq: $gameId } }) {
       player_id

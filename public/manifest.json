@@ -1,6 +1,6 @@
 {
-  "short_name": "LFStats Replay",
-  "name": "LFStats Game Replay Engine",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
