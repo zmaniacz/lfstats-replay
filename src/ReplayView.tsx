@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiText } from "@elastic/eui";
 import { VictoryChart, VictoryLine } from "victory";
+import ReplayActions from "./ReplayActions";
 
 function millisToMinutesAndSeconds(millis: number) {
   var minutes = Math.floor((millis / 1000 / 60) % 60);
@@ -19,8 +20,8 @@ interface ReplayViewProps {
 
 export default function ReplayView({ gameData }: ReplayViewProps) {
   const [milliseconds, setMilliseconds] = useState(0);
-  const [actions, setActions] = useState<Array<any> | null>(null);
-  const [deltas, setDeltas] = useState<Array<any> | null>(null);
+  const [visibleActions, setVisibleActions] = useState<Array<any>>([]);
+  const [deltas, setDeltas] = useState<Array<any>>([]);
   const [isActive, setIsActive] = useState(false);
 
   const gameLength = gameData.game.game_length * 1000;
@@ -32,13 +33,10 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
   useEffect(() => {
     let interval: any = null;
     if (isActive && milliseconds <= gameLength + 1000) {
-      interval = setInterval(() => {
-        setMilliseconds((milliseconds) => milliseconds + 1000);
-      }, 1);
-      setActions(
-        gameData.game_logs.filter(
-          (action) => action.action_time <= milliseconds
-        )
+      setVisibleActions(
+        gameData.game_logs
+          .filter((action) => action.action_time <= milliseconds)
+          .reverse()
       );
       setDeltas(
         gameData.game.game_teams.map((team: any) => {
@@ -52,17 +50,20 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
           };
         })
       );
+      interval = setTimeout(() => {
+        setMilliseconds((milliseconds) => milliseconds + 1000);
+      }, 100);
     } else if (!isActive && milliseconds !== 0) {
-      clearInterval(interval);
+      clearTimeout(interval);
     }
-    return () => clearInterval(interval);
+    return () => clearTimeout(interval);
   }, [isActive, milliseconds, gameData, gameLength]);
 
   function reset() {
     setMilliseconds(0);
     setIsActive(false);
-    setActions(null);
-    setDeltas(null);
+    setVisibleActions([]);
+    setDeltas([]);
   }
 
   return (
@@ -76,21 +77,22 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       <EuiButton onClick={reset}>Reset</EuiButton>
       <EuiFlexGroup alignItems="flexStart">
         <EuiFlexItem>
-          <VictoryChart>
-            {deltas?.map((team: any) => (
-              <VictoryLine
-                key={team.id}
-                data={team.teamDeltas}
-                x="score_time"
-                y="sum"
-                style={{ data: { stroke: team.colorNormal } }}
-                interpolation="basis"
-              />
-            ))}
-          </VictoryChart>
+          {
+            <VictoryChart>
+              {deltas?.map((team: any) => (
+                <VictoryLine
+                  data={team.teamDeltas}
+                  x="score_time"
+                  y="sum"
+                  style={{ data: { stroke: team.colorNormal } }}
+                  interpolation="basis"
+                />
+              ))}
+            </VictoryChart>
+          }
         </EuiFlexItem>
         <EuiFlexItem>
-          {actions
+          {/*{visibleActions
             ?.map((action) => {
               return (
                 <li key={action.id}>
@@ -98,7 +100,10 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
                 </li>
               );
             })
-            .reverse()}
+          .reverse()}*/}
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <ReplayActions data={visibleActions} />
         </EuiFlexItem>
       </EuiFlexGroup>
     </>
