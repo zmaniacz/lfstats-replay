@@ -2,13 +2,23 @@ import React from "react";
 
 export default function ReplayTable({ state }: any) {
   return (
-    <ul>
-      <li>player score shots</li>
+    <table>
+      <tr>
+        <th>player</th>
+        <th>score</th>
+        <th>shots</th>
+        <th>lives</th>
+      </tr>
       {Object.values(state).map((element: any) => (
-        <li key={element.iplId}>
-          {element.name} {element.score} {element.shotsLeft}/{element.shotsMax}
-        </li>
+        <tr key={element.iplId}>
+          <td>
+            {element.name} ({element.position})
+          </td>
+          <td>{element.score}</td>
+          <td>{element.shotsLeft}</td>
+          <td>{element.livesLeft}</td>
+        </tr>
       ))}
-    </ul>
+    </table>
   );
 }

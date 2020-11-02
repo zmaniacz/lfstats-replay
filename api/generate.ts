@@ -333,6 +333,14 @@ function applyAction(state: GameState, action: GameAction) {
     target.score -= 20;
     if (actor.position !== "Ammo Carrier")
       actor.shotsLeft = Math.max(0, actor.shotsLeft - 1);
+
+    if (action.type === "0205") target.currentHP -= 1;
+
+    if (action.type === "0206") {
+      target.currentHP = 0;
+      target.livesLeft = Math.max(0, target.livesLeft - 1);
+      target.lastDeac = action.time;
+    }
   }
 
   //miss
@@ -341,11 +349,19 @@ function applyAction(state: GameState, action: GameAction) {
       actor.shotsLeft = Math.max(0, actor.shotsLeft - 1);
   }
 
-  //resupply
+  //resupply shots
   if (action.type === "0500") {
     target.shotsLeft = Math.min(
       target.shotsMax,
       target.shotsLeft + target.resupplyShots
+    );
+  }
+
+  //resupply lives
+  if (action.type === "0502") {
+    target.livesLeft = Math.min(
+      target.livesMax,
+      target.livesLeft + target.resupplyLives
     );
   }
 
