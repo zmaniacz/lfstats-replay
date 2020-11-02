@@ -52,7 +52,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
         })
       );
       interval = setTimeout(() => {
-        setMilliseconds((milliseconds) => milliseconds + 1000);
+        setMilliseconds((milliseconds) => milliseconds + 2000);
       }, 100);
     } else if (!isActive && milliseconds !== 0) {
       clearTimeout(interval);
