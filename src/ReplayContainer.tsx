@@ -33,6 +33,7 @@ const GET_ACTIONS = gql`
       action_time
       action_type
       game_id
+      state
     }
   }
 `;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiText } from "@elastic/eui";
 import { VictoryChart, VictoryLine } from "victory";
 import ReplayActions from "./ReplayActions";
+import ReplayTable from "./ReplayTable";
 
 function millisToMinutesAndSeconds(millis: number) {
   var minutes = Math.floor((millis / 1000 / 60) % 60);
@@ -92,15 +93,9 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
           }
         </EuiFlexItem>
         <EuiFlexItem>
-          {/*{visibleActions
-            ?.map((action) => {
-              return (
-                <li key={action.id}>
-                  {action.player_name} {action.action_text} {action.target_name}
-                </li>
-              );
-            })
-          .reverse()}*/}
+          {visibleActions[0] && (
+            <ReplayTable state={visibleActions[0]?.state} />
+          )}
         </EuiFlexItem>
         <EuiFlexItem>
           <ReplayActions data={visibleActions} />
