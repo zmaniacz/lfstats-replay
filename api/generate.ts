@@ -146,14 +146,25 @@ module.exports = (req: NowRequest, res: NowResponse) => {
 
         //save generated state and actions
         console.log("start isnert");
-        for (const [key, value] of states.entrySeq().toArray()) {
-          console.log(`key: ${key}`);
+        let statesArray = states.entrySeq().toArray();
+        for (let i = 0; i < statesArray.length; i += 100) {
+          let chunk = statesArray.slice(i, i + 100);
+          console.log(`key: ${i}`);
           await connection.query(
             sql`
               INSERT INTO game_states
                 (action_id, state)
               VALUES
-                (${key}, ${JSON.stringify(value)})
+                (
+                  ${sql.join(
+                    chunk.map((action) =>
+                      sql.join([action[0], JSON.stringify(action[1])], sql`, `)
+                    ),
+                    sql`), (`
+                  )}
+                )
+              ON CONFLICT (action_id)
+              DO UPDATE SET state = excluded.state
             `
           );
         }
