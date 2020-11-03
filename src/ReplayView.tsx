@@ -24,6 +24,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
   const [visibleActions, setVisibleActions] = useState<Array<any>>([]);
   const [deltas, setDeltas] = useState<Array<any>>([]);
   const [isActive, setIsActive] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   const gameLength = gameData.game.game_length * 1000;
 
@@ -52,13 +53,13 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
         })
       );
       interval = setTimeout(() => {
-        setMilliseconds((milliseconds) => milliseconds + 2000);
+        setMilliseconds((milliseconds) => milliseconds + 150 * playbackSpeed);
       }, 100);
     } else if (!isActive && milliseconds !== 0) {
       clearTimeout(interval);
     }
     return () => clearTimeout(interval);
-  }, [isActive, milliseconds, gameData, gameLength]);
+  }, [isActive, milliseconds, gameData, gameLength, playbackSpeed]);
 
   function reset() {
     setMilliseconds(0);
@@ -76,10 +77,13 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       </EuiText>
       <EuiButton onClick={toggle}>{isActive ? "Pause" : "Start"}</EuiButton>
       <EuiButton onClick={reset}>Reset</EuiButton>
+      <EuiButton onClick={() => setPlaybackSpeed(1)}>1x</EuiButton>
+      <EuiButton onClick={() => setPlaybackSpeed(5)}>5x</EuiButton>
+      <EuiButton onClick={() => setPlaybackSpeed(10)}>10x</EuiButton>
       <EuiFlexGroup alignItems="flexStart">
         <EuiFlexItem>
           {
-            <VictoryChart>
+            <VictoryChart animate={{ duration: 100, easing: "linear" }}>
               {deltas?.map((team: any) => (
                 <VictoryLine
                   data={team.teamDeltas}
