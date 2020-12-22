@@ -210,9 +210,7 @@ module.exports = (req: NowRequest, res: NowResponse) => {
       `
       );
       if (game) {
-        const gameObjects: readonly GameObject[] = await connection.many<
-          GameObject
-        >(
+        const gameObjects: readonly GameObject[] = await connection.many<GameObject>(
           sql`
           SELECT 
             id      "id",
@@ -224,9 +222,7 @@ module.exports = (req: NowRequest, res: NowResponse) => {
           WHERE game_id=${gameId}
         `
         );
-        const gameActions: readonly GameAction[] = await connection.many<
-          GameAction
-        >(
+        const gameActions: readonly GameAction[] = await connection.many<GameAction>(
           sql`
           SELECT
             id            "id", 
