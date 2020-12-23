@@ -24,6 +24,7 @@ const GET_ACTIONS = gql`
       }
     }
     game_logs(where: { game_id: { _eq: $gameId } }) {
+      id
       player_id
       player_name
       target_id
@@ -51,5 +52,5 @@ export default function ReplayContainer({ gameId }: ReplayContainerProps) {
   if (loading) return <LoadSpinner />;
   if (error) return <LoadError />;
 
-  return <ReplayView gameData={data} />;
+  return <ReplayView game={data.game} actions={data.game_logs} />;
 }

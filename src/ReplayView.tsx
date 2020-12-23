@@ -3,6 +3,7 @@ import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiText } from "@elastic/eui";
 import { VictoryChart, VictoryGroup, VictoryLine } from "victory";
 import ReplayActions from "./ReplayActions";
 import ReplayTable from "./ReplayTable";
+import { GameAction } from "./types";
 
 function millisToMinutesAndSeconds(millis: number) {
   var minutes = Math.floor((millis / 1000 / 60) % 60);
@@ -13,20 +14,18 @@ function millisToMinutesAndSeconds(millis: number) {
 }
 
 interface ReplayViewProps {
-  gameData: {
-    game: any;
-    game_logs: Array<any>;
-  };
+  game: any;
+  actions: Array<GameAction>;
 }
 
-export default function ReplayView({ gameData }: ReplayViewProps) {
+export default function ReplayView({ game, actions }: ReplayViewProps) {
   const [milliseconds, setMilliseconds] = useState(0);
-  const [visibleActions, setVisibleActions] = useState<Array<any>>([]);
+  const [visibleActions, setVisibleActions] = useState<Array<GameAction>>([]);
   const [deltas, setDeltas] = useState<Array<any>>([]);
   const [isActive, setIsActive] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
-  const gameLength = gameData.game.game_length * 1000;
+  const gameLength = game.game_length * 1000;
 
   function toggle() {
     setIsActive(!isActive);
@@ -36,12 +35,10 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
     let interval: any = null;
     if (isActive && milliseconds <= gameLength + 1000) {
       setVisibleActions(
-        gameData.game_logs
-          .filter((action) => action.action_time <= milliseconds)
-          .reverse()
+        actions.filter((action) => action.action_time <= milliseconds).reverse()
       );
       setDeltas(
-        gameData.game.game_teams.map((team: any) => {
+        game.game_teams.map((team: any) => {
           return {
             colorDesc: team.color_desc,
             colorEnum: team.color_enum,
@@ -60,7 +57,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       clearTimeout(interval);
     }
     return () => clearTimeout(interval);
-  }, [isActive, milliseconds, gameData, gameLength, playbackSpeed]);
+  }, [isActive, milliseconds, game, actions, gameLength, playbackSpeed]);
 
   function reset() {
     setMilliseconds(0);
@@ -71,7 +68,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
 
   return (
     <>
-      <EuiText color="danger">{gameData.game.game_datetime}</EuiText>
+      <EuiText color="danger">{game.game_datetime}</EuiText>
       <EuiText>
         {millisToMinutesAndSeconds(milliseconds)} /{" "}
         {millisToMinutesAndSeconds(gameLength)}
@@ -105,7 +102,9 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
           )}
         </EuiFlexItem>
         <EuiFlexItem>
-          <ReplayActions data={visibleActions} />
+          {visibleActions.length > 0 && (
+            <ReplayActions actions={visibleActions} />
+          )}
         </EuiFlexItem>
       </EuiFlexGroup>
     </>
