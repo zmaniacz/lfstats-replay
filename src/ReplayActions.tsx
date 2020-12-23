@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import { FixedSizeList } from "react-window";
 
 function ReplayActions({ data }: any) {
-  const Row = ({ index, style }: { index: any; style: any }) => (
+  const Row = ({ index, style }: { index: number; style: any }) => (
     <li key={data[index].id}>
       {data[index].player_name} {data[index].action_text}{" "}
       {data[index].target_name}

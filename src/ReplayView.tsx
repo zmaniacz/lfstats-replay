@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiText } from "@elastic/eui";
-import { VictoryChart, VictoryLine } from "victory";
+import { VictoryChart, VictoryGroup, VictoryLine } from "victory";
 import ReplayActions from "./ReplayActions";
 import ReplayTable from "./ReplayTable";
 
@@ -46,6 +46,7 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
             colorDesc: team.color_desc,
             colorEnum: team.color_enum,
             colorNormal: team.color_normal,
+            index: team.index,
             teamDeltas: team.team_deltas.filter(
               (delta: any) => delta.score_time <= milliseconds
             ),
@@ -83,22 +84,24 @@ export default function ReplayView({ gameData }: ReplayViewProps) {
       <EuiFlexGroup alignItems="flexStart">
         <EuiFlexItem>
           {
-            <VictoryChart animate={{ duration: 100, easing: "linear" }}>
+            <VictoryChart animate={{ duration: 500, easing: "linear" }}>
               {deltas?.map((team: any) => (
-                <VictoryLine
-                  data={team.teamDeltas}
-                  x="score_time"
-                  y="sum"
-                  style={{ data: { stroke: team.colorNormal } }}
-                  interpolation="basis"
-                />
+                <VictoryGroup key={team.id}>
+                  <VictoryLine
+                    data={team.teamDeltas}
+                    x="score_time"
+                    y="sum"
+                    style={{ data: { stroke: team.colorNormal } }}
+                    interpolation="basis"
+                  />
+                </VictoryGroup>
               ))}
             </VictoryChart>
           }
         </EuiFlexItem>
         <EuiFlexItem>
           {visibleActions[0] && (
-            <ReplayTable state={visibleActions[0]?.state} />
+            <ReplayTable state={visibleActions[0]?.state} deltas={deltas} />
           )}
         </EuiFlexItem>
         <EuiFlexItem>

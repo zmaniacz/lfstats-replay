@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import { createPool, sql } from "slonik";
-import { isNull, cloneDeep } from "lodash";
 import { Map } from "immutable";
+import { cloneDeep, isNull } from "lodash";
+import { createPool, sql } from "slonik";
 
 const pool = createPool(process.env.DATABASE_URL);
 

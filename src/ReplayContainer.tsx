@@ -15,6 +15,7 @@ const GET_ACTIONS = gql`
         color_enum
         color_normal
         id
+        index
         neutral_team
         team_deltas {
           score_time
