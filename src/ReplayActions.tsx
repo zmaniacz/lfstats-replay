@@ -2,24 +2,51 @@ import { EuiText } from "@elastic/eui";
 import React, { memo } from "react";
 import { IconType } from "react-icons";
 import {
-  GiAmmoBox,
+  GiHeavyBullets,
   GiMedicalPack,
   GiHumanTarget,
   GiLaserPrecision,
   GiTargetLaser,
+  GiBrokenArrow,
+  GiGuitar,
+  GiDrum,
 } from "react-icons/gi";
 import { FixedSizeList } from "react-window";
-import { GameAction } from "./types";
-
-interface HashTable<T> {
-  [index: string]: T;
-}
+import { GameAction, HashTable } from "./types";
+import { colors } from "./colors";
 
 const icons: HashTable<IconType> = {
-  "0205": GiTargetLaser, //tag no deac
-  "0206": GiLaserPrecision, //tag deac
-  "0500": GiAmmoBox, //ammo resupply
-  "0502": GiMedicalPack, //lives resupply
+  "0100": GiGuitar, // EventMissionStart 0100
+  "0101": GiDrum, // EventMissionEnd 0101
+  // EventShotEmpty 0200
+  "0201": GiBrokenArrow, // EventShotMiss 0201
+  // EventShotGenMiss 0202
+  // EventShotGenDamage 0203
+  // EventShotGenDestroy 0204
+  "0205": GiTargetLaser, // EventShotOppDamage 0205
+  "0206": GiLaserPrecision, // EventShotOppDown 0206
+  // EventShotOwnDamage 0207
+  // EventShotOwnDown 0208
+  // EventShotOppDownByWarbot 0209
+  // EventMslStart 0300
+  // EventMslGenMiss 0301
+  // EventMslGenDamage 0302
+  // EventMslGenDestroy 0303
+  // EventMslMiss 0304
+  // EventMslOppDamage 0305
+  // EventMslOppDown 0306
+  // EventMslOwnDamage 0307
+  // EventMslOwnDown 0308
+  // EventRapidAct 0400
+  // EventRapidDeac 0401
+  // EventNukeAct 0404
+  // EventNukeDeton 0405
+  "0500": GiHeavyBullets, // EventResupplyShots 0500
+  "0502": GiMedicalPack, // EventResupplyLives 0502
+  // EventResupplyTeamShots 0510
+  // EventResupplyTeamLives 0512
+  // EventPenalty 0600
+  // EventAchieve 0900
 };
 
 interface ReplayActionsProps {
@@ -31,7 +58,10 @@ function ReplayActions({ actions }: ReplayActionsProps) {
     const ActionIcon: IconType =
       icons[actions[index].action_type] || GiHumanTarget;
     return (
-      <EuiText key={actions[index].id} style={style}>
+      <EuiText
+        key={actions[index].id}
+        style={{ color: colors[actions[index].player_color], ...style }}
+      >
         <ActionIcon /> {actions[index].player_name} {actions[index].action_text}{" "}
         {actions[index].target_name}
       </EuiText>

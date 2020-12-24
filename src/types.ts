@@ -1,3 +1,7 @@
+export interface HashTable<T> {
+  [index: string]: T;
+}
+
 export interface GameAction {
   id: number;
   player_id: number;
