@@ -35,7 +35,7 @@ export default function ReplayView({ game, actions }: ReplayViewProps) {
     let interval: any = null;
     if (isActive && milliseconds <= gameLength + 1000) {
       setVisibleActions(
-        actions.filter((action) => action.action_time <= milliseconds).reverse()
+        actions.filter((action) => action.time <= milliseconds).reverse()
       );
       setDeltas(
         game.game_teams.map((team: any) => {

@@ -25,17 +25,26 @@ const GET_ACTIONS = gql`
     }
     game_logs(where: { game_id: { _eq: $gameId } }) {
       id
-      player_id
-      player_name
-      target_id
-      target_name
-      player_color
-      target_color
-      action_text
-      action_time
-      action_type
-      game_id
+      time: action_time
+      type: action_type
+      text: action_text
+      gameId: game_id
       state
+      actorId: player_id
+      actorIpl: player
+      actorColor: player_color
+      actorColorEnum: player_color_enum
+      actorName: player_name
+      actorTeamIndex: player_team_index
+      targetId: target_id
+      targetIpl: target
+      targetColor: target_color
+      targetColorEnum: target_color_enum
+      targetName: target_name
+      targetTeamIndex: target_team_index
+      genIpl: gen_id
+      genName: gen_name
+      genColor: gen_color
     }
   }
 `;

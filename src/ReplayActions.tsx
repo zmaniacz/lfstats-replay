@@ -27,7 +27,6 @@ const icons: HashTable<IconType> = {
   "0206": GiLaserPrecision, // EventShotOppDown 0206
   // EventShotOwnDamage 0207
   // EventShotOwnDown 0208
-  // EventShotOppDownByWarbot 0209
   // EventMslStart 0300
   // EventMslGenMiss 0301
   // EventMslGenDamage 0302
@@ -55,15 +54,14 @@ interface ReplayActionsProps {
 
 function ReplayActions({ actions }: ReplayActionsProps) {
   const Row = ({ index, style }: { index: number; style: any }) => {
-    const ActionIcon: IconType =
-      icons[actions[index].action_type] || GiHumanTarget;
+    const ActionIcon: IconType = icons[actions[index].type] || GiHumanTarget;
     return (
       <EuiText
         key={actions[index].id}
-        style={{ color: colors[actions[index].player_color], ...style }}
+        style={{ color: colors[actions[index].actorColor], ...style }}
       >
-        <ActionIcon /> {actions[index].player_name} {actions[index].action_text}{" "}
-        {actions[index].target_name}
+        <ActionIcon /> {actions[index].actorName} {actions[index].text}{" "}
+        {actions[index].targetName}
       </EuiText>
     );
   };

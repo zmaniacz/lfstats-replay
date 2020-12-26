@@ -4,16 +4,24 @@ export interface HashTable<T> {
 
 export interface GameAction {
   id: number;
-  player_id: number;
-  player_name: string;
-  target_id: number;
-  target_name: string;
-  player_color: string;
-  target_color: string;
-  action_text: string;
-  action_time: number;
-  action_type: string;
-  game_id: number;
+  time: number;
+  type: string;
+  text: string;
+  gameId: number;
   state: object;
-  icon?: string;
+  actorId: number;
+  actorIpl: string;
+  actorColor: string;
+  actorColorEnum: number;
+  actorName: string;
+  actorTeamIndex: number;
+  targetId: string;
+  targetIpl: string;
+  targetColor: string;
+  targetColorEnum: number;
+  targetName: string;
+  targetTeamIndex: number;
+  genIpl: string;
+  genName: string;
+  genColor: string;
 }

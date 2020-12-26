@@ -2,6 +2,7 @@ import { NowRequest, NowResponse } from "@vercel/node";
 import { Map } from "immutable";
 import { cloneDeep, isNull } from "lodash";
 import { createPool, sql } from "slonik";
+import { GameAction } from "../src/types";
 
 const pool = createPool(process.env.DATABASE_URL);
 
@@ -67,26 +68,6 @@ interface GameObject {
   name: string;
   teamIndex: number;
   type: string;
-}
-
-interface GameAction {
-  id: number;
-  time: number;
-  type: string;
-  text: string;
-  actorId?: number;
-  actorIpl?: string;
-  actorColor?: string;
-  actorName?: string;
-  targetId?: string;
-  targetIpl?: string;
-  targetColor?: string;
-  targetName?: string;
-  teamIndex?: number;
-  targetTeamIndex?: number;
-  genIpl?: string;
-  genName?: string;
-  genColor?: string;
 }
 
 type GameState = Map<string, GameActor>;
@@ -225,23 +206,27 @@ module.exports = (req: NowRequest, res: NowResponse) => {
         const gameActions: readonly GameAction[] = await connection.many<GameAction>(
           sql`
           SELECT
-            id            "id", 
-            action_time   "time",
-            action_type   "type",
-            action_text   "text",
-            player_id     "actorId",
-            player        "actorIpl",
-            player_color  "actorColor",
-            player_name   "actorName",
-            target_id     "targetId",
-            target        "targetIpl",
-            target_color  "targetColor",
-            target_name   "targetName",
-            team_index    "teamIndex",
+            id                "id", 
+            action_time       "time",
+            action_type       "type",
+            action_text       "text",
+            game_id           "gameId",
+            state             "state",
+            player_id         "actorId",
+            player            "actorIpl",
+            player_color      "actorColor",
+            player_color_enum "actorColorEnum",
+            player_name       "actorName",
+            team_index        "actorTeamIndex",
+            target_id         "targetId",
+            target            "targetIpl",
+            target_color      "targetColor",
+            player_color_enum "targetColorEnum",
+            target_name       "targetName",
             target_team_index "targetTeamIndex",
-            gen_id        "genIpl",
-            gen_name      "genName",
-            gen_color     "genColor"
+            gen_id            "genIpl",
+            gen_name          "genName",
+            gen_color         "genColor"
           FROM game_logs
           WHERE game_id=${gameId}
           ORDER BY action_time ASC
@@ -316,6 +301,37 @@ module.exports = (req: NowRequest, res: NowResponse) => {
   } else res.send("No game provided");
 };
 
+// EventMissionStart 0100
+// EventMissionEnd 0101
+// EventShotEmpty 0200
+// EventShotMiss 0201
+// EventShotGenMiss 0202
+// EventShotGenDamage 0203
+// EventShotGenDestroy 0204
+// EventShotOppDamage 0205
+// EventShotOppDown 0206
+// EventShotOwnDamage 0207 - unused?
+// EventShotOwnDown 0208 - unused?
+// EventMslStart 0300
+// EventMslGenMiss 0301
+// EventMslGenDamage 0302
+// EventMslGenDestroy 0303
+// EventMslMiss 0304
+// EventMslOppDamage 0305
+// EventMslOppDown 0306
+// EventMslOwnDamage 0307
+// EventMslOwnDown 0308
+// EventRapidAct 0400
+// EventRapidDeac 0401
+// EventNukeAct 0404
+// EventNukeDeton 0405
+// EventResupplyShots 0500
+// EventResupplyLives 0502
+// EventResupplyTeamShots 0510
+// EventResupplyTeamLives 0512
+// EventPenalty 0600
+// EventAchieve 0900
+
 function applyAction(state: GameState, action: GameAction) {
   let nextState = cloneDeep(state);
   let actor: GameActor;
@@ -324,23 +340,44 @@ function applyAction(state: GameState, action: GameAction) {
   if (!isNull(action.targetIpl)) target = nextState.get(action.targetIpl);
 
   //hit or deac
-  if (action.type === "0205" || action.type === "0206") {
-    actor.score += 100;
+  if (
+    action.type === "0205" ||
+    action.type === "0206" ||
+    action.type === "0207" ||
+    action.type === "0208"
+  ) {
+    //target got hit, target loses points
     target.score -= 20;
-    if (actor.position !== "Ammo Carrier")
-      actor.shotsLeft = Math.max(0, actor.shotsLeft - 1);
 
-    if (action.type === "0205") target.currentHP -= 1;
+    //did you hit your own team? stupid.
+    if (action.actorTeamIndex !== action.targetTeamIndex) actor.score += 100;
+    else actor.score -= 100;
 
-    if (action.type === "0206") {
+    if (action.type === "0205" || action.type === "0207") target.currentHP -= 1;
+
+    if (action.type === "0206" || action.type === "0208") {
       target.currentHP = 0;
       target.livesLeft = Math.max(0, target.livesLeft - 1);
       target.lastDeac = action.time;
     }
   }
 
-  //miss
-  if (action.type === "0201") {
+  //blow up a gen
+  if (action.type === "0204") {
+    actor.score += 1001;
+  }
+
+  //decrement shots
+  if (
+    action.type === "0201" ||
+    action.type === "0202" ||
+    action.type === "0203" ||
+    action.type === "0204" ||
+    action.type === "0205" ||
+    action.type === "0206" ||
+    action.type === "0207" ||
+    action.type === "0208"
+  ) {
     if (actor.position !== "Ammo Carrier")
       actor.shotsLeft = Math.max(0, actor.shotsLeft - 1);
   }
