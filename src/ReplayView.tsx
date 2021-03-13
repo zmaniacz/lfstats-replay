@@ -83,7 +83,7 @@ export default function ReplayView({ game, actions }: ReplayViewProps) {
           {
             <VictoryChart animate={{ duration: 500, easing: "linear" }}>
               {deltas?.map((team: any) => (
-                <VictoryGroup key={team.id}>
+                <VictoryGroup key={team.colorNormal}>
                   <VictoryLine
                     data={team.teamDeltas}
                     x="score_time"
@@ -98,7 +98,7 @@ export default function ReplayView({ game, actions }: ReplayViewProps) {
         </EuiFlexItem>
         <EuiFlexItem>
           {visibleActions[0] && (
-            <ReplayTable state={visibleActions[0]?.state} deltas={deltas} />
+            <ReplayTable state={visibleActions[0]?.state} deltas={deltas} time={milliseconds} />
           )}
         </EuiFlexItem>
         <EuiFlexItem>

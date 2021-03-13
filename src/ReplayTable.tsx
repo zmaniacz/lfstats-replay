@@ -1,7 +1,7 @@
 import React from "react";
 import { EuiPanel, EuiBasicTable } from "@elastic/eui";
 
-export default function ReplayTable({ state, deltas }: any) {
+export default function ReplayTable({ state, deltas, time }: any) {
   deltas = deltas.map((team: any) => ({
     totals: Object.values(state)
       .filter((element: any) => element.teamIndex === team.index)
@@ -29,6 +29,11 @@ export default function ReplayTable({ state, deltas }: any) {
           field: "name",
           name: "Player",
           footer: <em>Total:</em>,
+          render: (name:any, item:any) => {
+            if(item.lastDeac === 0 || item.lastDeac + 8000 <= time)
+              return <strong>{name}</strong>;
+            else return name;
+          }
         },
         {
           field: "score",
@@ -66,6 +71,7 @@ export default function ReplayTable({ state, deltas }: any) {
       ];
       return (
         <EuiPanel key={team.index}>
+          {time}
           <EuiBasicTable
             items={items}
             columns={columns}

@@ -48,6 +48,14 @@ const icons: HashTable<IconType> = {
   // EventAchieve 0900
 };
 
+function millisToMinutesAndSeconds(millis: number) {
+  var minutes = Math.floor((millis / 1000 / 60) % 60);
+  var seconds = Math.floor((millis / 1000) % 60);
+  return seconds === 60
+    ? minutes + 1 + ":00"
+    : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
+
 interface ReplayActionsProps {
   actions: Array<GameAction>;
 }
@@ -60,7 +68,7 @@ function ReplayActions({ actions }: ReplayActionsProps) {
         key={actions[index].id}
         style={{ color: colors[actions[index].actorColor], ...style }}
       >
-        <ActionIcon /> {actions[index].actorName} {actions[index].text}{" "}
+        {millisToMinutesAndSeconds(actions[index].time)} <ActionIcon /> {actions[index].actorName} {actions[index].text}{" "}
         {actions[index].targetName}
       </EuiText>
     );

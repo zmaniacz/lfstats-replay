@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 import { Map } from "immutable";
 import { cloneDeep, isNull } from "lodash";
 import { createPool, sql } from "slonik";
@@ -174,7 +174,7 @@ const positionDefaults = {
   },
 };
 
-module.exports = (req: NowRequest, res: NowResponse) => {
+module.exports = (req: VercelRequest, res: VercelResponse) => {
   const { gameId }: { gameId?: number } = req.query;
   console.log("new run");
   if (gameId) {
@@ -388,6 +388,7 @@ function applyAction(state: GameState, action: GameAction) {
       target.shotsMax,
       target.shotsLeft + target.resupplyShots
     );
+    target.lastDeac = action.time;
   }
 
   //resupply lives
@@ -396,6 +397,7 @@ function applyAction(state: GameState, action: GameAction) {
       target.livesMax,
       target.livesLeft + target.resupplyLives
     );
+    target.lastDeac = action.time;
   }
 
   return nextState;
